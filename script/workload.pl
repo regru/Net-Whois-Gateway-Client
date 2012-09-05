@@ -58,13 +58,13 @@ foreach my $domain ( @domains ) {
     #warn $class;
     push @{ $domains_by_class{ $class } }, $domain;
     if ( $class eq 'gtld' && $domain !~ m/.me$/ ) {
-	push @{ $domains_by_class{ directi } }, $domain;
+        push @{ $domains_by_class{ directi } }, $domain;
     }
 }
 
 while ( $requests_made < $total_request ) {
     my $requests_size = norm_rand(
-	$mean_queue_size, int sqrt( $mean_queue_size )
+        $mean_queue_size, int sqrt( $mean_queue_size )
     );
 
     my @queue;
@@ -73,29 +73,29 @@ while ( $requests_made < $total_request ) {
 #    $requests_made += $requests_size;
 
     foreach (1..$requests_size*$test_rusu_frac) {
-	push @queue, get_random_element( $domains_by_class{ rusu } );
+        push @queue, get_random_element( $domains_by_class{ rusu } );
     }
 
     foreach (1..$requests_size*$test_gtld_frac) {
-	push @queue, get_random_element( $domains_by_class{ gtld } );
+        push @queue, get_random_element( $domains_by_class{ gtld } );
     }
 
     foreach (1..$requests_size*$test_directi_frac) {
-	push @queue,
-		    'directi:'.get_random_element( $domains_by_class{ directi } );
+        push @queue,
+                    'directi:'.get_random_element( $domains_by_class{ directi } );
     }
 
     $requests_made += scalar @queue;
     
     if ( grep { /^directi:/ } @queue ) {
-	$param_gw{directi_params} = {
-	    service_username => 'boldin.pavel@gmail.com',
-	    service_password => 'dazachem',
-	    service_langpref => 'en',
-	    service_role     => 'reseller',
-	    service_parentid => '999999998',
-	    url              => 'http://api.onlyfordemo.net/anacreon/servlet/APIv3',
-	};
+        $param_gw{directi_params} = {
+            service_username => 'boldin.pavel@gmail.com',
+            service_password => 'dazachem',
+            service_langpref => 'en',
+            service_role     => 'reseller',
+            service_parentid => '999999998',
+            url              => 'http://api.onlyfordemo.net/anacreon/servlet/APIv3',
+        };
     }
 
     fisher_yates_shuffle( \@queue );
@@ -103,8 +103,8 @@ while ( $requests_made < $total_request ) {
     $param_gw{referral} = int rand(3);
 
     my @answer = Net::Whois::Gateway::Client::whois(
-	query => \@queue,
-	%param_gw,
+        query => \@queue,
+        %param_gw,
     );
 }
 
@@ -124,9 +124,9 @@ sub gaussian_rand {
     my ($g1, $g2);  # gaussian-distributed numbers
 
     do {
-	$u1 = 2 * rand() - 1;
-	$u2 = 2 * rand() - 1;
-	$w = $u1*$u1 + $u2*$u2;
+        $u1 = 2 * rand() - 1;
+        $u2 = 2 * rand() - 1;
+        $w = $u1*$u1 + $u2*$u2;
     } while ( $w >= 1 );
 
     $w = sqrt( (-2 * log($w))  / $w );
@@ -140,9 +140,9 @@ sub fisher_yates_shuffle {
     my $array = shift;
     my $i;
     for ($i = @$array; --$i; ) {
-	my $j = int rand ($i+1);
-	next if $i == $j;
-	@$array[$i,$j] = @$array[$j,$i];
+        my $j = int rand ($i+1);
+        next if $i == $j;
+        @$array[$i,$j] = @$array[$j,$i];
     }
 }
 

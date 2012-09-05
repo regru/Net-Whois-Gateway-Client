@@ -50,9 +50,9 @@ warn Dumper \%options, \@query	if $verbose;
 
 if ( -f $config_file && -s _ ) {
     Net::Whois::Gateway::Client::configure(
-	YAML::LoadFile( $config_file ),
-	gateway_port => $port,
-	gateway_host => $host,
+        YAML::LoadFile( $config_file ),
+        gateway_port => $port,
+        gateway_host => $host,
     );
 }
 
@@ -78,10 +78,10 @@ while( @response && @query ) {
     print 'v'x40, "\n";
 
     foreach ( @{ $r->{subqueries} || [ $r ] } ) {
-	print "\n", '---------' x 3, "\n";
-	print "Server: $_->{server}\n";
-	print '---------' x 3, "\n";
-	print $_->{whois} || $r->{error}, "\n";
+        print "\n", '---------' x 3, "\n";
+        print "Server: $_->{server}\n";
+        print '---------' x 3, "\n";
+        print $_->{whois} || $r->{error}, "\n";
     }
 
     print '^'x40, "\n";

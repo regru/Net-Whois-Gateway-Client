@@ -29,7 +29,7 @@ sub whois {
     my %param = @_;
 
     exists $param{query}
-	or die "No query given";
+        or die "No query given";
 
     my @answer = _send_request( %param );
 
@@ -43,79 +43,79 @@ sub _send_request {
     my $buffer;
 
     local $SIG{__DIE__} = sub {
-	$online = 0;
-	die @_;
+        $online = 0;
+        die @_;
     };
 
     my $resp;
 
     foreach my $critical (0..1) {
-	$resp = eval {
-	    local $SIG{ALRM} = sub { warn "timeout\n"; die "timeout\n" }   if $timeout;
-	    alarm $timeout*1.2 				 if $timeout;
+        $resp = eval {
+            local $SIG{ALRM} = sub { warn "timeout\n"; die "timeout\n" }   if $timeout;
+            alarm $timeout*1.2 				 if $timeout;
 
-	    my ($socket, $new_socket) = _get_socket( \%param );
-		$socket or die "WHOIS: cannot open socket: $!";
+            my ($socket, $new_socket) = _get_socket( \%param );
+                $socket or die "WHOIS: cannot open socket: $!";
 
         if ( $new_socket && $configuration ) {
             # repeat configuration as not critical one
             ping( default_config => $configuration );
         }
 
-	    #use Data::Dumper;
-	    #warn Dumper $socket;
+            #use Data::Dumper;
+            #warn Dumper $socket;
 
 #	    $socket->connected
 #		or die "WHOIS: socket is not connected";
 
-	    my $frozen = Storable::nfreeze( [ \%param ] );
-	    $frozen = bytes::length( $frozen ). "\0" . $frozen;
+            my $frozen = Storable::nfreeze( [ \%param ] );
+            $frozen = bytes::length( $frozen ). "\0" . $frozen;
     
-	    my $w = $socket->syswrite( $frozen, bytes::length( $frozen ) );
-	    
-	    if ( ! defined $w || $w <= 0 ) {
-		die "WHOIS: Cannot syswrite to socket: $!";
-	    }
+            my $w = $socket->syswrite( $frozen, bytes::length( $frozen ) );
+            
+            if ( ! defined $w || $w <= 0 ) {
+                die "WHOIS: Cannot syswrite to socket: $!";
+            }
 
-	    my $r = $socket->sysread( $buffer, 65536 );
+            my $r = $socket->sysread( $buffer, 65536 );
 
-	    if ( ! defined $r || $r <= 0 ) {
-		die "WHOIS: Cannot sysread from socket: $!";
-	    }
+            if ( ! defined $r || $r <= 0 ) {
+                die "WHOIS: Cannot sysread from socket: $!";
+            }
 
         return 1;
-	};
+        };
 
-	if ( $@ ) {
-	    _fail_socket( \%param );
-	    warn $@ if ! $critical && $@ ne "timeout\n";
-	}
+        if ( $@ ) {
+            _fail_socket( \%param );
+            warn $@ if ! $critical && $@ ne "timeout\n";
+        }
 
-	last if $resp;
+        last if $resp;
     }
 
     alarm 0 if $timeout;
 
     if ( $@ ) {
-	if ( $@ eq "timeout\n" ) {
-	    die "WHOIS: timeout calling sysread/syswrite";
-	}
-	else {
-	    die $@;
-	}
+        if ( $@ eq "timeout\n" ) {
+            die "WHOIS: timeout calling sysread/syswrite";
+        }
+        else {
+            die $@;
+        }
     }
 
     my $answer;
 
     if (
-	$buffer &&
-	$buffer =~ /^(\d+)\0/o &&
-	bytes::length( $buffer ) >= $1 + bytes::length($1) + 1 
+        $buffer &&
+        $buffer =~ /^(\d+)\0/o &&
+        bytes::length( $buffer ) >= $1 + bytes::length($1) + 1 
     ) {
-	$answer = Storable::thaw( substr( $buffer, bytes::length($1) + 1, $1 ) );
+        $answer = Storable::thaw( substr( $buffer, bytes::length($1) + 1, $1 ) );
     }
     else {
-	die "WHOIS: Cannot parse BUFFER";
+        die "WHOIS: Cannot parse BUFFER";
     }
 
     return @$answer;
@@ -146,7 +146,7 @@ sub _get_socket {
     #warn $SOCKET_FACTORY{$addr} && $SOCKET_FACTORY{$addr}->connected;
 
     return ($SOCKET_FACTORY{ $addr }, 0) if	 $SOCKET_FACTORY{ $addr }
-				      && $SOCKET_FACTORY{ $addr }->connected;
+                                      && $SOCKET_FACTORY{ $addr }->connected;
 
     #warn "reconnection $addr";
     $SOCKET_FACTORY{ $addr } = IO::Socket::INET->new( $addr );

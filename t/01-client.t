@@ -95,10 +95,10 @@ SKIP: {
     }    
 
     eval {
-	@full_result = Net::Whois::Gateway::Client::whois(    
-	    query  => [ 'pleasetesttimeoutonthisdomainrequest.com' ],
-	    timeout => 2,
-	);
+        @full_result = Net::Whois::Gateway::Client::whois(    
+            query  => [ 'pleasetesttimeoutonthisdomainrequest.com' ],
+            timeout => 2,
+        );
     };
 
     ok( $@ && $@ =~ /timeout/, 'timeout requests ok' );
